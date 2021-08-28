@@ -3,22 +3,30 @@ settings:
     force: false
     interval: 0s
 schema:
-- name: video-playlist
-  path: .
-  args: 
-    - -mode=live
-  env: 
-   SPOTIFY_KEY:
-  commands: 
-    run: 
-      status: true
-  watcher:
-    extensions:
-    - go
-    paths:
-    - /
-    ignore:
+  - name: video-playlist
+    path: .
+    env: 
+      SPOTIFY_CLIENT_ID: 
+      SPOTIFY_CLIENT_SECRET: 
+    args: 
+      - -mode=music video
+    commands: 
+      build: 
+        status: true 
+        method: 
+          go build 
+        args: 
+          - -o ./bin/video-playlist
+          - .
+      run: 
+        status: true
+        method: ./bin/video-playlist
+    watcher:
+      extensions:
+        - go
       paths:
-      - .git
-      - .realize
-      - vendor
+        - /
+      ignore:
+        paths:
+          - .git
+          - vendor

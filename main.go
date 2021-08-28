@@ -1,6 +1,7 @@
 package main
 
 import (
+	"encoding/base64"
 	"encoding/json"
 	"errors"
 	"flag"
@@ -20,7 +21,7 @@ import (
 
 const port = 1313
 
-const limit = 5
+const limit = 100
 
 const (
 	errServerError = "server error"
@@ -40,16 +41,18 @@ const (
 )
 
 type config struct {
-	spotifyKey string
-	mode       string
+	spotifyClientID     string
+	spotifyClientSecret string
+	mode                string
 }
 
 type handler struct {
-	spotifyAPIKey string
-	token         string
-	mode          string
-	tokenSetAt    *time.Time
-	che           map[string]videoPage
+	spotifyClientID     string
+	spotifyClientSecret string
+	token               string
+	mode                string
+	tokenSetAt          *time.Time
+	che                 map[string]videoPage
 }
 
 type tmpldata struct {
@@ -90,30 +93,39 @@ type playlistRes struct {
 func main() {
 	cfg := config{}
 
-	flag.StringVar(&cfg.spotifyKey, "spotifykey", "", "spotify clientn id")
+	flag.StringVar(&cfg.spotifyClientID, "spotifyClientID", "", "spotify client id")
+	flag.StringVar(&cfg.spotifyClientSecret, "spotifyClientSecret", "", "spotify client secret")
 	flag.StringVar(&cfg.mode, "mode", modeMusicVideo, "search mode (default is music video)")
 	flag.Parse()
 
-	cfg.spotifyKey = firstString(os.Getenv("SPOTIFY_KEY"), cfg.spotifyKey)
-	if cfg.spotifyKey == "" {
-		log.Fatal("spotify api key is empty")
+	cfg.spotifyClientID = firstString(os.Getenv("SPOTIFY_CLIENT_ID"), cfg.spotifyClientID)
+	cfg.spotifyClientSecret = firstString(os.Getenv("SPOTIFY_CLIENT_SECRET"), cfg.spotifyClientSecret)
+
+	if cfg.spotifyClientID == "" {
+		log.Fatal("spotify client id is empty")
+	}
+	if cfg.spotifyClientSecret == "" {
+		log.Fatal("spotify client secret empty")
 	}
 
 	log.Printf(`
 		video playlister running with
-		spotifykey: %s
-		mode:       %s 
+		client id:     %s
+		client secret: %s
+		mode:          %s 
 	`,
-		cfg.spotifyKey,
+		cfg.spotifyClientID,
+		cfg.spotifyClientSecret,
 		cfg.mode,
 	)
 
 	cache := make(map[string]videoPage)
 
 	h := handler{
-		spotifyAPIKey: cfg.spotifyKey,
-		che:           cache,
-		mode:          cfg.mode,
+		spotifyClientID:     cfg.spotifyClientID,
+		spotifyClientSecret: cfg.spotifyClientSecret,
+		che:                 cache,
+		mode:                cfg.mode,
 	}
 
 	r := mux.NewRouter()
@@ -250,7 +262,12 @@ func (c *handler) getSpotifyToken() (string, error) {
 		strings.NewReader("grant_type=client_credentials"),
 	)
 	req.Header.Add("Content-Type", "application/x-www-form-urlencoded")
-	req.Header.Add("Authorization", fmt.Sprintf("Basic %s", c.spotifyAPIKey))
+
+	enc := base64.StdEncoding.EncodeToString(
+		[]byte(fmt.Sprintf("%s:%s", c.spotifyClientID, c.spotifyClientSecret)),
+	)
+
+	req.Header.Add("Authorization", fmt.Sprintf("Basic %s", enc))
 
 	var res *http.Response
 	if res, err = client.Do(req); nil != err {
