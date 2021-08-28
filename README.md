@@ -1,6 +1,6 @@
 # video-playlist
 
-View a list of youtube search urls based on songs from a public spotify playlist.
+View a list of youtube search urls based on songs from a public spotify playlist to save time thinking and typing up search terms.
 
 ### Running the project
 The project can be run with `go run main.go` from the project root.
