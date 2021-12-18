@@ -2,7 +2,7 @@
 
 View a list of youtube search urls based on songs from a public spotify playlist to save time thinking and typing up search terms.
 
-### Running the project
+### Running the project with go run
 The project can be run with `go run main.go` from the project root.
 1. Create a new application in the spotify developer dashboard. Instructions here: https://developer.spotify.com/documentation/general/guides/app-settings/
 2. Add your app client id and secret as env vars or provide them using flags when you run the program.
