@@ -9,7 +9,7 @@ schema:
       SPOTIFY_CLIENT_ID: 
       SPOTIFY_CLIENT_SECRET: 
     args: 
-      - -mode=music video
+      - -mode=web
     commands: 
       build: 
         status: true 
