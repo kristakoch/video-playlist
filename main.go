@@ -527,7 +527,8 @@ const page = `
 	<div>Hi! 👋 It's good to see you.</div><br>
 	<div style="max-width: 600px; margin:auto">
 			<form action="/" method="POST">
-				<label for="uri">Enter the URI of a public Spotify playlist and I'll generate music video search urls for the songs in that playlist:</label><br><br>
+				<label for="uri">Enter the URI of a public Spotify playlist and I'll generate music video youtube search urls for the songs in that playlist.</label><br><br>
+				<p>Example in share link: https://open.spotify.com/playlist/<strong>4mtsECh01GM83NtxaGMfJh</strong>?si=81ec6d279895419b</p>
 				<input type="text" id="uri" name="uri" style="font-size: .8em" />
 				<input type="submit" value="Submit">
 			</form>
